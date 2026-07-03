@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8;
+  }
+
+  .card {
+    @apply rounded-card bg-white border border-slate-100 shadow-soft;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-dark hover:shadow-glow;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary text-white hover:opacity-90 hover:shadow-glow;
+  }
+
+  .btn-outline {
+    @apply btn border border-slate-200 bg-white text-slate-700 hover:border-primary hover:text-primary;
+  }
+
+  .btn-accent {
+    @apply btn bg-accent text-white hover:bg-accent-dark;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-slate-600 hover:bg-slate-100;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20;
+  }
+
+  .label-field {
+    @apply mb-1.5 block text-sm font-medium text-slate-600;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-primary hover:text-primary hover:bg-primary/5;
+  }
+
+  .chip-active {
+    @apply border-primary bg-primary text-white hover:bg-primary hover:text-white;
+  }
+
+  .skill-tag-offer {
+    @apply inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary;
+  }
+
+  .skill-tag-want {
+    @apply inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent-dark;
+  }
+
+  .skeleton {
+    @apply animate-shimmer rounded-lg bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 bg-[length:800px_100%];
+  }
+
+  .page-enter {
+    @apply animate-fadeUp;
+  }
+}
