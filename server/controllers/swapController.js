@@ -68,6 +68,40 @@ const sendSwapRequest = async (req, res) => {
     }
 };
 
+
+const getReceivedRequests = async (req, res) => {
+    try {
+
+        // Logged-in user
+        const receiverId = req.user.id;
+
+        // Find all requests received by this user
+        const requests = await SwapRequest.find({
+            receiver: receiverId
+        }).populate(
+            "sender",
+            "name email college department"
+        );
+
+        return res.status(200).json({
+            success: true,
+            count: requests.length,
+            requests
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
+};
+
 module.exports = {
-    sendSwapRequest
+    sendSwapRequest,
+    getReceivedRequests
 };
