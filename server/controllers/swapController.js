@@ -101,7 +101,66 @@ const getReceivedRequests = async (req, res) => {
     }
 };
 
+
+const acceptSwapRequest = async (req, res) => {
+    try {
+
+        // Get Swap Request ID from URL
+        const swapRequestId = req.params.id;
+
+        // Find the swap request
+        const swapRequest = await SwapRequest.findById(swapRequestId);
+
+        // Check if request exists
+        if (!swapRequest) {
+            return res.status(404).json({
+                success: false,
+                message: "Swap request not found."
+            });
+        }
+
+        // Check if logged-in user is the receiver
+        if (swapRequest.receiver.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to accept this request."
+            });
+        }
+
+        // Prevent accepting an already processed request
+        if (swapRequest.status !== "Pending") {
+            return res.status(400).json({
+                success: false,
+                message: "This request has already been processed."
+            });
+        }
+
+        // Accept the request
+        swapRequest.status = "Accepted";
+
+        await swapRequest.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Swap request accepted successfully.",
+            swapRequest
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
+};
+
+
 module.exports = {
     sendSwapRequest,
-    getReceivedRequests
+    getReceivedRequests,
+    acceptSwapRequest,
 };
