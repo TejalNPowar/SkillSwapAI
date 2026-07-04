@@ -91,6 +91,8 @@ const loginUser = async (req,res)=>{
       email
     }).select("+password");
 
+    console.log(user);
+
     if (!user) {
       return res.status(401).json({
         success: false,

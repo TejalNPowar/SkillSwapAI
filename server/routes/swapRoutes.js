@@ -6,7 +6,9 @@ const authMiddleware = require("../middleware/authMiddleware");
 const {
     sendSwapRequest,
     getReceivedRequests,
+    getSentRequests,
     acceptSwapRequest,
+    rejectSwapRequest,
 } = require("../controllers/swapController");
 
 router.post(
@@ -21,10 +23,22 @@ router.get(
     getReceivedRequests
 );
 
+router.get(
+    "/sent",
+    authMiddleware,
+    getSentRequests
+);
+
 router.put(
     "/:id/accept",
     authMiddleware,
     acceptSwapRequest
+);
+
+router.put(
+    "/:id/reject",
+    authMiddleware,
+    rejectSwapRequest
 );
 
 module.exports = router;
