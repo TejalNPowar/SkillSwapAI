@@ -20,12 +20,45 @@ export default function Register() {
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    await registerApi(form)
-    setLoading(false)
-    navigate('/profile-setup')
+  e.preventDefault();
+
+  if (form.password !== form.confirmPassword) {
+    alert("Passwords do not match");
+    return;
   }
+
+  setLoading(true);
+
+  try {
+
+    const response = await registerApi({
+      name: form.fullName,
+      email: form.email,
+      password: form.password,
+      college: form.college,
+      department: form.department,
+      year: form.year,
+    });
+
+    alert(response.data.message);
+
+    navigate("/login");
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      error.response?.data?.message ||
+      "Registration failed"
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
 
   return (
     <div className="container-page flex min-h-[calc(100vh-64px)] items-center justify-center py-12 page-enter">

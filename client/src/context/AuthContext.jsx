@@ -1,28 +1,82 @@
-import { createContext, useContext, useState } from 'react'
-import { currentUser as mockCurrentUser } from '../data/students.js'
+import { createContext, useContext, useEffect, useState } from "react";
+import { getProfile } from "../services/api";
+const AuthContext = createContext(null);
 
-const AuthContext = createContext(null)
-
-// NOTE: This is a frontend-only mock. Replace `login`/`logout` with real
-// calls into services/api.js once the backend is connected.
 export function AuthProvider({ children }) {
-  // Default to "logged in" as the demo user so every screen is explorable.
-  const [user, setUser] = useState(mockCurrentUser)
 
-  const login = (credentials) => {
-    setUser(mockCurrentUser)
-    return Promise.resolve(mockCurrentUser)
-  }
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const logout = () => setUser(null)
+  useEffect(() => {
+
+    const loadUser = async () => {
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            setLoading(false);
+            return;
+        }
+
+        try {
+
+            const response = await getProfile();
+
+            setUser(response.data.user);
+
+        } catch (error) {
+
+            console.log("Session expired");
+
+            localStorage.removeItem("token");
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+    loadUser();
+
+}, []);
+
+  const login = async (data) => {
+
+    // Save JWT
+    localStorage.setItem("token", data.token);
+
+    // Save User
+    setUser(data.user);
+
+    return data.user;
+  };
+
+  const logout = () => {
+
+    localStorage.removeItem("token");
+
+    setUser(null);
+
+  };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, setUser }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isAuthenticated: !!user,
+        login,
+        logout,
+        setUser,
+    }}
+    >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  return useContext(AuthContext)
+  return useContext(AuthContext);
 }

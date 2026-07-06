@@ -17,13 +17,31 @@ export default function Login() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    await loginApi(form)
-    await login(form)
-    setLoading(false)
-    navigate('/dashboard')
-  }
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await loginApi({
+        email: form.email,
+        password: form.password,
+      });
+
+      console.log(response.data);
+
+      // Send backend response to AuthContext
+      await login(response.data);
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error.response?.data?.message || "Login failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+};
 
   return (
     <div className="container-page flex min-h-[calc(100vh-64px)] items-center justify-center py-12 page-enter">

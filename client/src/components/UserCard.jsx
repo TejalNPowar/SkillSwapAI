@@ -4,11 +4,18 @@ import SkillTag from './SkillTag.jsx'
 
 // Card used in Dashboard "Recommended" and Explore Skills grid.
 export default function UserCard({ user, onRequest }) {
+
+  console.log("UserCard user:", user);
+
   return (
     <div className="card group flex flex-col p-5 transition hover:-translate-y-1 hover:shadow-softer">
       <div className="flex items-start gap-3">
         <img
-          src={user.avatar}
+          src={
+              user.profileImage ||
+              "https://ui-avatars.com/api/?name=" +
+              encodeURIComponent(user.name)
+          }
           alt={user.name}
           className="h-14 w-14 rounded-full border-2 border-white object-cover shadow-soft"
         />
@@ -19,7 +26,7 @@ export default function UserCard({ user, onRequest }) {
           </p>
           <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-amber-500">
             <FiStar className="fill-amber-400 text-amber-400" size={13} />
-            {user.rating}
+            {user.rating || "New"}
           </div>
         </div>
       </div>
@@ -44,7 +51,7 @@ export default function UserCard({ user, onRequest }) {
       </div>
 
       <div className="mt-5 flex gap-2">
-        <Link to={`/profile/${user.id}`} className="btn-outline flex-1">
+        <Link to={`/profile/${user._id}`} className="btn-outline flex-1">
           View Profile
         </Link>
         <button onClick={() => onRequest?.(user)} className="btn-primary flex-1">
@@ -54,3 +61,6 @@ export default function UserCard({ user, onRequest }) {
     </div>
   )
 }
+
+
+

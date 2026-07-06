@@ -1,3 +1,4 @@
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
@@ -27,11 +28,49 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/explore" element={<ExploreSkills />} />
-          <Route path="/profile/:id" element={<Profile />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/requests" element={<MyRequests />} />
+          <Route
+              path="/dashboard"
+              element={
+                  <ProtectedRoute>
+                      <Dashboard />
+                  </ProtectedRoute>
+              }
+          />
+          <Route
+          path="/explore"
+          element={
+              <ProtectedRoute>
+                  <ExploreSkills />
+              </ProtectedRoute>
+          }
+      />
+
+      <Route
+          path="/profile/:id"
+          element={
+              <ProtectedRoute>
+                  <Profile />
+              </ProtectedRoute>
+          }
+      />
+
+      <Route
+          path="/profile"
+          element={
+              <ProtectedRoute>
+                  <Profile />
+              </ProtectedRoute>
+          }
+      />
+
+      <Route
+          path="/requests"
+          element={
+              <ProtectedRoute>
+                  <MyRequests />
+              </ProtectedRoute>
+          }
+      />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

@@ -35,7 +35,7 @@ export default function Dashboard() {
     return () => {
       active = false
     }
-  }, [user?.id])
+  }, [user?._id])
 
   const handleConfirmRequest = async () => {
     if (!requestTarget) return

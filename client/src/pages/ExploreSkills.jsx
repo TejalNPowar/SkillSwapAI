@@ -1,18 +1,19 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FiFilter } from 'react-icons/fi'
 import Sidebar from '../components/Sidebar.jsx'
 import SearchBar from '../components/SearchBar.jsx'
 import UserCard from '../components/UserCard.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import Modal from '../components/Modal.jsx'
-import { students } from '../data/students.js'
+
 import { skillCategories } from '../data/skills.js'
-import { sendRequest } from '../services/api.js'
+import { sendRequest, getUsers  } from '../services/api.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const EXPERIENCE_OPTIONS = ['Beginner', 'Intermediate', 'Advanced']
 const AVAILABILITY_OPTIONS = ['Weekdays', 'Weekends', 'Evenings']
 const PAGE_SIZE = 6
+
 
 export default function ExploreSkills() {
   const { user } = useAuth()
@@ -24,20 +25,23 @@ export default function ExploreSkills() {
   const [page, setPage] = useState(1)
   const [requestTarget, setRequestTarget] = useState(null)
 
-  const colleges = useMemo(() => ['All', ...new Set(students.map((s) => s.college))], [])
+  const [students, setStudents] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const colleges = useMemo(() => ['All', ...new Set(students.map((s) => s.college))], [students])
 
   const filtered = useMemo(() => {
     return students.filter((s) => {
-      const matchesSearch = `${s.name} ${s.college} ${s.skillsOffered.join(' ')} ${s.skillsWanted.join(' ')}`
+      const matchesSearch = `${s.name} ${s.college} ${(s.skillsOffered || []).join(' ')} ${(s.skillsWanted ||[]).join(' ')}`
         .toLowerCase()
         .includes(search.toLowerCase())
-      const matchesCategory = category === 'All' || s.skillsOffered.some((sk) => sk.toLowerCase().includes(category.toLowerCase()))
+      const matchesCategory = category === 'All' ||( s.skillsOffered || []).some((sk) => sk.toLowerCase().includes(category.toLowerCase()))
       const matchesExperience = experience === 'All' || s.experience === experience
       const matchesCollege = college === 'All' || s.college === college
-      const matchesAvailability = availability === 'All' || s.availability.includes(availability)
+      const matchesAvailability = availability === 'All' || (s.availability || []).includes(availability)
       return matchesSearch && matchesCategory && matchesExperience && matchesCollege && matchesAvailability
     })
-  }, [search, category, experience, college, availability])
+  }, [students, search, category, experience, college, availability])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -49,9 +53,42 @@ export default function ExploreSkills() {
 
   const handleConfirmRequest = async () => {
     if (!requestTarget) return
-    await sendRequest({ fromUserId: user?.id, toUserId: requestTarget.id, skill: requestTarget.skillsOffered[0] })
+    await sendRequest({ fromUserId: user?.id, toUserId: requestTarget._id, skill: requestTarget.skillsOffered[0] })
     setRequestTarget(null)
   }
+
+
+  useEffect(() => {
+
+    const fetchUsers = async () => {
+
+        try {
+
+            const response = await getUsers();
+
+            console.log("Users:", response.data.users);
+
+            setStudents(response.data.users);
+
+        } catch (error) {
+
+            console.error(error);
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+    fetchUsers();
+
+}, []);
+
+
+
+
 
   return (
     <div className="flex page-enter">
@@ -102,7 +139,7 @@ export default function ExploreSkills() {
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {paginated.map((s) => (
-                <UserCard key={s.id} user={s} onRequest={setRequestTarget} />
+                <UserCard key={s._id} user={s} onRequest={setRequestTarget} />
               ))}
             </div>
           )}
@@ -129,7 +166,15 @@ export default function ExploreSkills() {
         {requestTarget && (
           <div>
             <div className="flex items-center gap-3">
-              <img src={requestTarget.avatar} alt={requestTarget.name} className="h-12 w-12 rounded-full object-cover" />
+              <img
+                  src={
+                      requestTarget.profileImage ||
+                      "https://ui-avatars.com/api/?name=" +
+                      encodeURIComponent(requestTarget.name)
+                  }
+                  alt={requestTarget.name}
+                  className="h-12 w-12 rounded-full object-cover"
+              />
               <div>
                 <p className="font-semibold text-slate-800">{requestTarget.name}</p>
                 <p className="text-xs text-slate-500">{requestTarget.college}</p>

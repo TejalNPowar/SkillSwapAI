@@ -6,9 +6,11 @@ import { notifications as mockNotifications } from '../data/notifications.js'
 
 // Base axios instance — point this at the real Express/MongoDB backend later.
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  headers: { 'Content-Type': 'application/json' },
-})
+  baseURL: "http://localhost:5000/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 const MOCK_DELAY = 500
 const mock = (data) => new Promise((resolve) => setTimeout(() => resolve({ data }), MOCK_DELAY))
@@ -16,21 +18,21 @@ const mock = (data) => new Promise((resolve) => setTimeout(() => resolve({ data 
 /* ----------------------------- Auth ----------------------------- */
 
 export function login(payload) {
-  // return api.post('/auth/login', payload)
-  return mock({ token: 'mock-token', user: students[0] })
+  return api.post("/auth/login", payload);
 }
 
-export function register(payload) {
-  // return api.post('/auth/register', payload)
-  return mock({ token: 'mock-token', user: { ...payload, id: 'new-user' } })
+export function register(data) {
+  return api.post("/auth/register", data);
 }
 
 /* ---------------------------- Profile ---------------------------- */
 
-export function getProfile(userId) {
-  // return api.get(`/users/${userId}`)
-  const found = students.find((s) => s.id === userId) || students[0]
-  return mock(found)
+export function getProfile() {
+  return api.get("/auth/profile", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 }
 
 export function updateProfile(userId, payload) {
@@ -40,9 +42,12 @@ export function updateProfile(userId, payload) {
 
 /* ----------------------------- Users ------------------------------ */
 
-export function getUsers(filters = {}) {
-  // return api.get('/users', { params: filters })
-  return mock(students)
+export function getUsers() {
+  return api.get("/users", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 }
 
 export function getSkills() {
@@ -96,6 +101,14 @@ export function cancelRequest(requestId) {
 export function completeRequest(requestId) {
   // return api.patch(`/requests/${requestId}/complete`)
   return mock({ id: requestId, status: 'completed' })
+}
+
+export function getUserById(id) {
+  return api.get(`/users/${id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 }
 
 export default api
