@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
+    // ---------------- Basic Details ----------------
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: 6,
-      select: false, // Hide password by default
+      select: false,
     },
 
     college: {
@@ -37,6 +38,13 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    year: {
+      type: String,
+      default: "",
+    },
+
+    // ---------------- Profile ----------------
+
     bio: {
       type: String,
       default: "",
@@ -48,6 +56,14 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    coverImage: {
+      type: String,
+      default:
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200",
+    },
+
+    // ---------------- Skills ----------------
+
     skillsOffered: {
       type: [String],
       default: [],
@@ -58,10 +74,58 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
 
+    // ---------------- Availability ----------------
+
     availability: {
       type: String,
       enum: ["Weekdays", "Weekends", "Evenings", ""],
       default: "",
+    },
+
+    experience: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Advanced", ""],
+      default: "Beginner",
+    },
+
+    // ---------------- Rating ----------------
+
+    rating: {
+      type: Number,
+      default: 5,
+      min: 0,
+      max: 5,
+    },
+
+    completedSwaps: {
+      type: Number,
+      default: 0,
+    },
+
+    // ---------------- Achievements ----------------
+
+    achievements: {
+      type: [String],
+      default: [],
+    },
+
+    // ---------------- Social Links ----------------
+
+    socials: {
+      github: {
+        type: String,
+        default: "",
+      },
+
+      linkedin: {
+        type: String,
+        default: "",
+      },
+
+      portfolio: {
+        type: String,
+        default: "",
+      },
     },
   },
   {
