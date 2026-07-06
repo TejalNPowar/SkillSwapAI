@@ -5,6 +5,7 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const swapRoutes = require("./routes/swapRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -21,6 +22,7 @@ connectDB();
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/swaps", swapRoutes);
+app.use("/api/users", userRoutes);
 
 // Default Route
 app.get("/", (req, res) => {
