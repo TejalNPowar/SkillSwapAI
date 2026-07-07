@@ -4,7 +4,13 @@ import Sidebar from '../components/Sidebar.jsx'
 import RequestCard from '../components/RequestCard.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import Loader from '../components/Loader.jsx'
-import { getRequests, acceptRequest, rejectRequest, cancelRequest, completeRequest } from '../services/api.js'
+import {
+  getReceivedRequests,
+  getSentRequests,
+  acceptRequest,
+  rejectRequest,
+} from '../services/api.js'
+
 import { useAuth } from '../context/AuthContext.jsx'
 
 const TABS = [
@@ -19,25 +25,63 @@ export default function MyRequests() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    getRequests(user?.id).then((res) => {
-      setRequests(res.data)
-      setLoading(false)
-    })
-  }, [user?.id])
+
+  const fetchRequests = async () => {
+
+    try {
+
+      setLoading(true);
+
+      let response;
+
+      if (tab === "received") {
+        response = await getReceivedRequests();
+      } else {
+        response = await getSentRequests();
+      }
+
+      setRequests(response.data.requests);
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+  fetchRequests();
+
+}, [tab]);
 
   const updateStatus = (id, status) => {
-    setRequests((reqs) => reqs.map((r) => (r.id === id ? { ...r, status } : r)))
+    setRequests((reqs) => reqs.map((r) => (r._id === id ? { ...r, status } : r)))
   }
 
   const handlers = {
-    onAccept: (r) => acceptRequest(r.id).then(() => updateStatus(r.id, 'accepted')),
-    onReject: (r) => rejectRequest(r.id).then(() => updateStatus(r.id, 'rejected')),
-    onCancel: (r) => cancelRequest(r.id).then(() => updateStatus(r.id, 'cancelled')),
-    onComplete: (r) => completeRequest(r.id).then(() => updateStatus(r.id, 'completed')),
-  }
+  onAccept: async (r) => {
 
-  const filtered = requests.filter((r) => r.direction === tab)
+    await acceptRequest(r._id);
+
+    updateStatus(r._id, "Accepted");
+
+  },
+
+  onReject: async (r) => {
+
+    await rejectRequest(r._id);
+
+    updateStatus(r._id, "Rejected");
+
+  },
+
+};
+
+  const filtered = requests;
 
   return (
     <div className="flex page-enter">
@@ -74,7 +118,7 @@ export default function MyRequests() {
               }
             />
           ) : (
-            filtered.map((r) => <RequestCard key={r.id} request={r} {...handlers} />)
+            filtered.map((r) => <RequestCard key={r._id} request={r} {...handlers} />)
           )}
         </div>
       </div>

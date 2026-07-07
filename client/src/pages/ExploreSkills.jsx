@@ -52,10 +52,39 @@ export default function ExploreSkills() {
   }
 
   const handleConfirmRequest = async () => {
-    if (!requestTarget) return
-    await sendRequest({ fromUserId: user?.id, toUserId: requestTarget._id, skill: requestTarget.skillsOffered[0] })
-    setRequestTarget(null)
-  }
+
+    if (!requestTarget) return;
+
+    try {
+
+        await sendRequest({
+
+            receiverId: requestTarget._id,
+
+            offeredSkill: user.skillsOffered?.[0] || "Java",
+
+            requestedSkill: requestTarget.skillsOffered?.[0] || "React",
+
+            message: `${user.name} wants to swap skills with you.`
+
+        });
+
+        alert("Swap request sent successfully!");
+
+        setRequestTarget(null);
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            error.response?.data?.message ||
+            "Failed to send request."
+        );
+
+    }
+
+};
 
 
   useEffect(() => {

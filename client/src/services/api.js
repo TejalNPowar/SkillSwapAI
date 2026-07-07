@@ -1,10 +1,9 @@
-import axios from 'axios'
-import { students } from '../data/students.js'
-import { skills } from '../data/skills.js'
-import { requests as mockRequests } from '../data/requests.js'
-import { notifications as mockNotifications } from '../data/notifications.js'
+import axios from "axios";
+import { students } from "../data/students.js";
+import { skills } from "../data/skills.js";
+import { notifications as mockNotifications } from "../data/notifications.js";
 
-// Base axios instance — point this at the real Express/MongoDB backend later.
+// Base Axios Instance
 export const api = axios.create({
   baseURL: "http://localhost:5000/api",
   headers: {
@@ -12,10 +11,15 @@ export const api = axios.create({
   },
 });
 
-const MOCK_DELAY = 500
-const mock = (data) => new Promise((resolve) => setTimeout(() => resolve({ data }), MOCK_DELAY))
+const MOCK_DELAY = 500;
+const mock = (data) =>
+  new Promise((resolve) =>
+    setTimeout(() => resolve({ data }), MOCK_DELAY)
+  );
 
-/* ----------------------------- Auth ----------------------------- */
+/* ============================================================
+                        AUTH
+============================================================ */
 
 export function login(payload) {
   return api.post("/auth/login", payload);
@@ -25,7 +29,9 @@ export function register(data) {
   return api.post("/auth/register", data);
 }
 
-/* ---------------------------- Profile ---------------------------- */
+/* ============================================================
+                      PROFILE
+============================================================ */
 
 export function getProfile() {
   return api.get("/auth/profile", {
@@ -35,12 +41,17 @@ export function getProfile() {
   });
 }
 
-export function updateProfile(userId, payload) {
-  // return api.put(`/users/${userId}`, payload)
-  return mock({ ...payload, id: userId })
+export function updateProfile(payload) {
+  return api.put("/auth/profile", payload, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 }
 
-/* ----------------------------- Users ------------------------------ */
+/* ============================================================
+                        USERS
+============================================================ */
 
 export function getUsers() {
   return api.get("/users", {
@@ -48,59 +59,6 @@ export function getUsers() {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-}
-
-export function getSkills() {
-  // return api.get('/skills')
-  return mock(skills)
-}
-
-/* --------------------------- Dashboard ----------------------------- */
-
-export function fetchDashboard(userId) {
-  // return api.get(`/dashboard/${userId}`)
-  return mock({
-    stats: {
-      connections: 24,
-      pendingRequests: 5,
-      completedSwaps: 12,
-      skillsShared: 8,
-    },
-    recommended: students.slice(0, 6),
-    recentActivity: mockNotifications,
-  })
-}
-
-/* --------------------------- Requests ------------------------------ */
-
-export function getRequests(userId) {
-  // return api.get(`/requests`, { params: { userId } })
-  return mock(mockRequests)
-}
-
-export function sendRequest(payload) {
-  // return api.post('/requests', payload)
-  return mock({ ...payload, id: `req-${Date.now()}`, status: 'pending' })
-}
-
-export function acceptRequest(requestId) {
-  // return api.patch(`/requests/${requestId}/accept`)
-  return mock({ id: requestId, status: 'accepted' })
-}
-
-export function rejectRequest(requestId) {
-  // return api.patch(`/requests/${requestId}/reject`)
-  return mock({ id: requestId, status: 'rejected' })
-}
-
-export function cancelRequest(requestId) {
-  // return api.patch(`/requests/${requestId}/cancel`)
-  return mock({ id: requestId, status: 'cancelled' })
-}
-
-export function completeRequest(requestId) {
-  // return api.patch(`/requests/${requestId}/complete`)
-  return mock({ id: requestId, status: 'completed' })
 }
 
 export function getUserById(id) {
@@ -111,4 +69,78 @@ export function getUserById(id) {
   });
 }
 
-export default api
+export function getSkills() {
+  // Backend endpoint not created yet
+  return mock(skills);
+}
+
+/* ============================================================
+                    DASHBOARD (Mock for now)
+============================================================ */
+
+export function fetchDashboard() {
+  return mock({
+    stats: {
+      connections: 24,
+      pendingRequests: 5,
+      completedSwaps: 12,
+      skillsShared: 8,
+    },
+    recommended: students.slice(0, 6),
+    recentActivity: mockNotifications,
+  });
+}
+
+/* ============================================================
+                    SWAP REQUESTS
+============================================================ */
+
+export function sendRequest(data) {
+  return api.post("/swaps/send", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+}
+
+export function getSentRequests() {
+  return api.get("/swaps/sent", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+}
+
+export function getReceivedRequests() {
+  return api.get("/swaps/received", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+}
+
+export function acceptRequest(id) {
+  return api.put(
+    `/swaps/${id}/accept`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+}
+
+export function rejectRequest(id) {
+  return api.put(
+    `/swaps/${id}/reject`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+}
+
+export default api;

@@ -33,6 +33,22 @@ const sendSwapRequest = async (req, res) => {
             });
         }
 
+        // Check if a pending request already exists
+         const existingRequest = await SwapRequest.findOne({
+            sender: senderId,
+            receiver: receiverId,
+            status: "Pending"
+        });
+
+        if (existingRequest) {
+            return res.status(400).json({
+                success: false,
+                message: "A pending request already exists."
+            });
+        }
+
+
+
         // Prevent sending request to yourself
         if (senderId === receiverId) {
             return res.status(400).json({
