@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const swapRoutes = require("./routes/swapRoutes");
 const userRoutes = require("./routes/userRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ connectDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/swaps", swapRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Default Route
 app.get("/", (req, res) => {

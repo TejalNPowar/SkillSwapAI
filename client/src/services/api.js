@@ -79,15 +79,10 @@ export function getSkills() {
 ============================================================ */
 
 export function fetchDashboard() {
-  return mock({
-    stats: {
-      connections: 24,
-      pendingRequests: 5,
-      completedSwaps: 12,
-      skillsShared: 8,
+  return api.get("/dashboard", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
-    recommended: students.slice(0, 6),
-    recentActivity: mockNotifications,
   });
 }
 

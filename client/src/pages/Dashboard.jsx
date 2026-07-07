@@ -26,9 +26,26 @@ export default function Dashboard() {
   useEffect(() => {
     let active = true
     setLoading(true)
-    fetchDashboard(user?.id).then((res) => {
+    fetchDashboard().then((res) => {
       if (active) {
-        setData(res.data)
+        setData({
+        stats: {
+            connections: res.data.dashboard.acceptedRequests,
+
+            pendingRequests:
+                res.data.dashboard.pendingRequests,
+
+            completedSwaps:
+                res.data.dashboard.acceptedRequests,
+
+            skillsShared:
+                res.data.dashboard.skillsOffered,
+        },
+
+        recommended: [],
+
+        recentActivity: [],
+    });
         setLoading(false)
       }
     })
