@@ -74,6 +74,11 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
 
+    experience: {
+        type: String,
+        enum: ["Beginner", "Intermediate", "Advanced"],
+        default: "Beginner",
+    },
     // ---------------- Availability ----------------
 
     availability: {

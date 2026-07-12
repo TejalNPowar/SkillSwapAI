@@ -123,18 +123,27 @@ const loginUser = async (req,res)=>{
       { expiresIn: "7d" }
     );
 
+    
+
+    const { password: _, ...userWithoutPassword } = user.toObject();
+
     return res.status(200).json({
         success: true,
         message: "Login successful",
         token,
-        user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            college: user.college,
-            department: user.department
-        }
+        user: userWithoutPassword,
     });
+
+
+
+
+    return res.status(200).json({
+        success: true,
+        message: "Login successful",
+        token,
+        user: userObject,
+    });
+
   }catch (error) {
     console.error(error);
 
@@ -145,6 +154,8 @@ const loginUser = async (req,res)=>{
   }
         
 };
+
+
 
 
 const getProfile = async (req, res) => {
@@ -183,7 +194,8 @@ const updateProfile = async (req, res) => {
             skillsOffered,
             skillsWanted,
             availability,
-            profileImage
+            profileImage,
+            experience
         } = req.body;
 
         const user = await User.findById(req.user.id);
@@ -195,11 +207,12 @@ const updateProfile = async (req, res) => {
             });
         }
 
-        user.bio = bio || user.bio;
+        if (bio !== undefined) user.bio = bio;
         user.profileImage = profileImage || user.profileImage;
         user.skillsOffered = skillsOffered || user.skillsOffered;
         user.skillsWanted = skillsWanted || user.skillsWanted;
         user.availability = availability || user.availability;
+        if (experience !== undefined) user.experience = experience;
 
         await user.save();
 

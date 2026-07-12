@@ -7,7 +7,7 @@ import Modal from "../components/Modal";
 import { useAuth } from "../context/AuthContext";
 // import { getProfile, sendRequest } from "../services/api";
 import { getProfile, getUserById } from "../services/api";
-
+import EditProfileModal from "../components/EditProfileModal.jsx";
 
 export default function Profile() {
   const { id } = useParams();
@@ -15,9 +15,11 @@ export default function Profile() {
 
   const [profileUser, setProfileUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [showRequest, setShowRequest] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [sent, setSent] = useState(false);
+
+  
 
   useEffect(() => {
 
@@ -87,6 +89,10 @@ export default function Profile() {
       </div>
     );
   }
+  
+  console.log("Auth User:", authUser);
+  console.log("Profile User:", profileUser);
+  console.log("Same user?", authUser?._id === profileUser?._id);
 
   return (
     <div className="flex page-enter">
@@ -202,23 +208,46 @@ export default function Profile() {
 
           </div>
 
-          {authUser?._id !== profileUser?._id && (
-            <div className="mt-10">
+          {authUser?._id === profileUser?._id ? (
 
-              <button
-                onClick={() => setShowRequest(true)}
-                className="btn-primary"
-                disabled={sent}
-              >
-                {sent ? "Request Sent" : "Request Skill Swap"}
-              </button>
+  <div className="mt-10">
 
-            </div>
-          )}
+    <button
+      onClick={() => setShowEditModal(true)}
+      className="btn-primary"
+    >
+      Edit Profile
+    </button>
 
+  </div>
+
+) : (
+
+  <div className="mt-10">
+
+    <button
+      onClick={() => setShowRequest(true)}
+      className="btn-primary"
+      disabled={sent}
+    >
+      {sent ? "Request Sent" : "Request Skill Swap"}
+    </button>
+
+  </div>
+
+)}
         </div>
 
       </div>
+
+    <EditProfileModal
+    open={showEditModal}
+    onClose={() => setShowEditModal(false)}
+    profileUser={profileUser}
+    onProfileUpdated={(updatedUser) => {
+        setProfileUser(updatedUser);
+    }}
+/>
 
       <Modal
         open={showRequest}
