@@ -76,6 +76,7 @@ const registerUser = async (req, res) => {
 
 
 const loginUser = async (req,res)=>{
+  console.log("➡️ loginUser called");
   try{
 
     const {email,password,} = req.body;
