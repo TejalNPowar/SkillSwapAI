@@ -5,7 +5,7 @@ import Sidebar from "../components/Sidebar";
 import SkillTag from "../components/SkillTag";
 import Modal from "../components/Modal";
 import { useAuth } from "../context/AuthContext";
-import { getProfile, getUserById, sendRequest } from "../services/api";
+import { getProfile, getUserById, sendRequest, connectGoogle as connectGoogleApi } from "../services/api";
 import EditProfileModal from "../components/EditProfileModal.jsx";
 
 
@@ -59,26 +59,10 @@ const connectGoogle = async () => {
     try {
         setGoogleLoading(true);
 
-        const token = localStorage.getItem("token");
-
-        const response = await fetch(
-            "http://localhost:5000/api/auth/google",
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-
-        const data = await response.json();
-
-        if (!data.success) {
-            throw new Error(data.message || "Failed to connect Google.");
-        }
+        const response = await connectGoogleApi();
 
         // Open Google OAuth
-        window.location.href = data.authUrl;
+        window.location.href = response.data.authUrl;
 
     } catch (error) {
 
@@ -134,10 +118,7 @@ const connectGoogle = async () => {
       </div>
     );
   }
-  
-  console.log("Auth User:", authUser);
-  console.log("Profile User:", profileUser);
-  console.log("Same user?", authUser?._id === profileUser?._id);
+
 
 
 

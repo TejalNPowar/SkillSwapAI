@@ -132,7 +132,7 @@ export default function MyRequests() {
       <Sidebar />
       <div className="container-page flex-1 py-8">
         <h1 className="font-display text-2xl font-bold text-slate-900">My Requests</h1>
-        <p className="mt-1 text-sm text-slate-500">Track skill swaps you\u2019ve sent and received.</p>
+        <p className="mt-1 text-sm text-slate-500">Track skill swaps you've sent and received.</p>
 
         <div className="mt-6 inline-flex rounded-xl bg-slate-100 p-1">
           {TABS.map(({ key, label, icon: Icon }) => (

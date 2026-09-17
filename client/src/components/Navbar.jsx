@@ -8,6 +8,7 @@ const LINKS = [
   { to: '/explore', label: 'Explore Skills' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/requests', label: 'Requests' },
+  { to: '/sessions', label: 'Sessions' },
   { to: '/profile', label: 'Profile' },
 ]
 
@@ -18,6 +19,10 @@ export default function Navbar() {
 
   const linkClass = ({ isActive }) =>
     `text-sm font-medium transition hover:text-primary ${isActive ? 'text-primary' : 'text-slate-600'}`
+
+  const userAvatar =
+    user?.profileImage ||
+    (user?.name ? 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) : undefined)
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-md">
@@ -42,7 +47,7 @@ export default function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           {isAuthenticated ? (
             <button onClick={() => navigate('/profile')} className="flex items-center gap-2">
-              <img src={user.avatar} alt={user.name} className="h-9 w-9 rounded-full border-2 border-primary/30 object-cover" />
+              <img src={userAvatar} alt={user.name} className="h-9 w-9 rounded-full border-2 border-primary/30 object-cover" />
             </button>
           ) : (
             <>
@@ -72,7 +77,7 @@ export default function Navbar() {
             <hr className="border-slate-100" />
             {isAuthenticated ? (
               <Link to="/profile" onClick={() => setOpen(false)} className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                <img src={user.avatar} alt={user.name} className="h-8 w-8 rounded-full object-cover" />
+                <img src={userAvatar} alt={user.name} className="h-8 w-8 rounded-full object-cover" />
                 View Profile
               </Link>
             ) : (

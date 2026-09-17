@@ -166,4 +166,16 @@ export function joinSession(id) {
   });
 }
 
+/* ============================================================
+                        GOOGLE OAUTH
+============================================================ */
+
+export function connectGoogle() {
+  return api.get("/auth/google", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+}
+
 export default api;

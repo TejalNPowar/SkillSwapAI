@@ -26,8 +26,6 @@ export default function Login() {
         password: form.password,
       });
 
-      console.log(response.data);
-
       // Send backend response to AuthContext
       await login(response.data);
 
@@ -87,9 +85,12 @@ export default function Login() {
               <input type="checkbox" name="remember" checked={form.remember} onChange={handleChange} className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/30" />
               Remember me
             </label>
-            <a href="#" className="font-medium text-primary hover:underline">
-              Forgot password?
-            </a>
+            <span
+              className="cursor-not-allowed font-medium text-slate-400"
+              title="Coming soon"
+            >
+              Forgot password? <span className="text-xs">(coming soon)</span>
+            </span>
           </div>
 
           <button type="submit" disabled={loading} className="btn-primary w-full py-3">
@@ -103,8 +104,13 @@ export default function Login() {
           <hr className="flex-1 border-slate-200" />
         </div>
 
-        <button type="button" className="btn-outline w-full py-3">
-          <FcGoogle size={18} /> Continue with Google
+        <button
+          type="button"
+          disabled
+          title="Coming soon"
+          className="btn-outline w-full py-3 cursor-not-allowed opacity-60"
+        >
+          <FcGoogle size={18} /> Continue with Google <span className="text-xs">(coming soon)</span>
         </button>
 
         <p className="mt-7 text-center text-sm text-slate-500">

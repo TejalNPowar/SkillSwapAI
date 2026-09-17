@@ -69,7 +69,7 @@ export default function ProfileSetup() {
   })
   const [skillsOffered, setSkillsOffered] = useState(user?.skillsOffered || [])
   const [skillsWanted, setSkillsWanted] = useState(user?.skillsWanted || [])
-  const [photoPreview, setPhotoPreview] = useState(user?.avatar || '')
+  const [photoPreview, setPhotoPreview] = useState(user?.profileImage || '')
   const [saving, setSaving] = useState(false)
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
@@ -95,10 +95,10 @@ export default function ProfileSetup() {
       ...form,
       skillsOffered,
       skillsWanted,
-      avatar: photoPreview,
+      profileImage: photoPreview,
       socials: { github: form.github, linkedin: form.linkedin, portfolio: form.portfolio },
     }
-    const res = await updateProfile(user?.id, payload)
+    const res = await updateProfile(payload)
     setUser?.((u) => ({ ...u, ...res.data }))
     setSaving(false)
     navigate('/dashboard')
@@ -108,7 +108,7 @@ export default function ProfileSetup() {
     <div className="container-page max-w-3xl py-12 page-enter">
       <div className="mb-8 text-center">
         <h1 className="font-display text-3xl font-bold text-slate-900">Set up your profile</h1>
-        <p className="mt-2 text-slate-500">Tell other students what you can teach and what you\u2019re hoping to learn.</p>
+        <p className="mt-2 text-slate-500">Tell other students what you can teach and what you're hoping to learn.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="card space-y-8 p-8">

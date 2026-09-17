@@ -1,26 +1,18 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Loader from "./Loader.jsx";
 
 export default function ProtectedRoute({ children }) {
 
-    const { loading, isAuthenticated, user } = useAuth();
-
-    console.log("========== ProtectedRoute ==========");
-    console.log("Current URL:", window.location.pathname);
-    console.log("Loading:", loading);
-    console.log("User:", user);
-    console.log("Authenticated:", isAuthenticated);
+    const { loading, isAuthenticated } = useAuth();
 
     if (loading) {
-        return <h1>Loading...</h1>;
+        return <Loader />;
     }
 
     if (!isAuthenticated) {
-        console.log("Redirecting to Login");
         return <Navigate to="/login" replace />;
     }
-
-    console.log("Access Granted");
 
     return children;
 }

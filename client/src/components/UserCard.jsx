@@ -5,8 +5,6 @@ import SkillTag from './SkillTag.jsx'
 // Card used in Dashboard "Recommended" and Explore Skills grid.
 export default function UserCard({ user, onRequest }) {
 
-  console.log("UserCard user:", user);
-
   return (
     <div className="card group flex flex-col p-5 transition hover:-translate-y-1 hover:shadow-softer">
       <div className="flex items-start gap-3">
@@ -61,6 +59,3 @@ export default function UserCard({ user, onRequest }) {
     </div>
   )
 }
-
-
-

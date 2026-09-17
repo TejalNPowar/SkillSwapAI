@@ -27,6 +27,7 @@ export default function ExploreSkills() {
 
   const [students, setStudents] = useState([])
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState(false)
 
   const colleges = useMemo(() => ['All', ...new Set(students.map((s) => s.college))], [students])
 
@@ -95,13 +96,13 @@ export default function ExploreSkills() {
 
             const response = await getUsers();
 
-            console.log("Users:", response.data.users);
-
             setStudents(response.data.users);
+            setFetchError(false);
 
         } catch (error) {
 
             console.error(error);
+            setFetchError(true);
 
         } finally {
 
@@ -161,10 +162,17 @@ export default function ExploreSkills() {
 
         <div className="mt-6">
           {paginated.length === 0 ? (
-            <EmptyState
-              title="No students match these filters"
-              description="Try widening your search or clearing a filter to see more students."
-            />
+            fetchError ? (
+              <EmptyState
+                title="Couldn't load students"
+                description="Something went wrong while fetching students. Please try refreshing the page."
+              />
+            ) : (
+              <EmptyState
+                title="No students match these filters"
+                description="Try widening your search or clearing a filter to see more students."
+              />
+            )
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {paginated.map((s) => (
