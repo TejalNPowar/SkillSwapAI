@@ -4,11 +4,13 @@ import Sidebar from '../components/Sidebar.jsx'
 import RequestCard from '../components/RequestCard.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import Loader from '../components/Loader.jsx'
+import ScheduleSessionModal from '../components/ScheduleSessionModal.jsx'
 import {
   getReceivedRequests,
   getSentRequests,
   acceptRequest,
   rejectRequest,
+  getMySessions,
 } from '../services/api.js'
 
 import { useAuth } from '../context/AuthContext.jsx'
@@ -23,6 +25,13 @@ export default function MyRequests() {
   const [tab, setTab] = useState('received')
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // Swap-request IDs that already have a session, so "Schedule Session" can
+  // be hidden once either participant has scheduled one.
+  const [scheduledSwapRequestIds, setScheduledSwapRequestIds] = useState(new Set())
+
+  // The request currently being scheduled (drives the modal)
+  const [scheduleTarget, setScheduleTarget] = useState(null)
 
   useEffect(() => {
 
@@ -58,6 +67,25 @@ export default function MyRequests() {
 
 }, [tab]);
 
+  // Fetch existing sessions once so we know which Accepted requests are
+  // already scheduled. Backend remains the source of truth for actually
+  // preventing duplicates; this is just for hiding the button proactively.
+  const refreshSessions = async () => {
+    try {
+      const response = await getMySessions();
+      const ids = new Set(
+        (response.data.sessions || []).map((s) => String(s.swapRequest))
+      );
+      setScheduledSwapRequestIds(ids);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    refreshSessions();
+  }, []);
+
   const updateStatus = (id, status) => {
     setRequests((reqs) => reqs.map((r) => (r._id === id ? { ...r, status } : r)))
   }
@@ -80,6 +108,22 @@ export default function MyRequests() {
   },
 
 };
+
+  const handleScheduled = (session) => {
+    setScheduledSwapRequestIds((prev) => new Set(prev).add(String(session.swapRequest)));
+    alert("Session scheduled successfully!");
+  }
+
+  // Both sender and receiver may schedule. The scheduling user becomes the
+  // teacher, the other becomes the student. The default skill is whichever
+  // skill *this* user is the one teaching in the swap:
+  //   sender teaches offeredSkill, receiver teaches requestedSkill.
+  const scheduleContext = (() => {
+    if (!scheduleTarget) return null;
+    const otherUser = tab === 'sent' ? scheduleTarget.receiver : scheduleTarget.sender;
+    const defaultSkill = tab === 'sent' ? scheduleTarget.offeredSkill : scheduleTarget.requestedSkill;
+    return { otherUser, defaultSkill };
+  })();
 
   const filtered = requests;
 
@@ -118,10 +162,29 @@ export default function MyRequests() {
               }
             />
           ) : (
-            filtered.map((r) => <RequestCard key={r._id} request={r} {...handlers} />)
+            filtered.map((r) => (
+              <RequestCard
+                key={r._id}
+                request={r}
+                {...(tab === 'received' ? handlers : {})}
+                onSchedule={setScheduleTarget}
+                hasSession={scheduledSwapRequestIds.has(String(r._id))}
+              />
+            ))
           )}
         </div>
       </div>
+
+      <ScheduleSessionModal
+        open={!!scheduleTarget}
+        onClose={() => setScheduleTarget(null)}
+        request={scheduleTarget}
+        currentUserId={user?._id}
+        otherUser={scheduleContext?.otherUser}
+        defaultSkill={scheduleContext?.defaultSkill}
+        onScheduled={handleScheduled}
+        onScheduleFailed={refreshSessions}
+      />
     </div>
   )
 }

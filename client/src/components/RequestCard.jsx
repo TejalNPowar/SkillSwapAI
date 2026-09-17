@@ -1,9 +1,11 @@
-import { FiCheck, FiX, FiClock } from "react-icons/fi";
+import { FiCheck, FiX, FiClock, FiCalendar } from "react-icons/fi";
 
 export default function RequestCard({
   request,
   onAccept,
   onReject,
+  onSchedule,
+  hasSession,
 }) {
 
   const user =
@@ -95,6 +97,28 @@ export default function RequestCard({
             </button>
 
           </div>
+      )}
+
+      {onSchedule &&
+        request.status === "Accepted" &&
+        !hasSession && (
+          <div className="flex gap-2">
+
+            <button
+              onClick={() => onSchedule(request)}
+              className="btn-primary"
+            >
+              <FiCalendar />
+              Schedule Session
+            </button>
+
+          </div>
+      )}
+
+      {request.status === "Accepted" && hasSession && (
+        <span className="text-xs font-medium text-slate-500">
+          Session scheduled
+        </span>
       )}
 
     </div>

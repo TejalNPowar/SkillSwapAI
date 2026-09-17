@@ -35,9 +35,14 @@ const sessionSchema = new mongoose.Schema(
       default: 60,
     },
 
-    meetingLink: {
+    meetLink: {
       type: String,
-      default: "",
+      default: null,
+    },
+
+    meetSpaceName: {
+      type: String,
+      default: null,
     },
 
     notes: {

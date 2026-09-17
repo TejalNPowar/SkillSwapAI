@@ -138,4 +138,32 @@ export function rejectRequest(id) {
   );
 }
 
+/* ============================================================
+                        SESSIONS
+============================================================ */
+
+export function createSession(data) {
+  return api.post("/sessions", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+}
+
+export function getMySessions() {
+  return api.get("/sessions", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+}
+
+export function joinSession(id) {
+  return api.get(`/sessions/${id}/join`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+}
+
 export default api;

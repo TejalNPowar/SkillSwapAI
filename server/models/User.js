@@ -56,6 +56,11 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    googleRefreshToken: {
+      type: String,
+      default: null,
+    },
+
     coverImage: {
       type: String,
       default:

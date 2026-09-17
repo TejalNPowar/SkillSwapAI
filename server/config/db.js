@@ -8,6 +8,8 @@ const connectDB = async () => {
         const conn = await mongoose.connect(process.env.MONGO_URI);
 
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+        console.log(`📦 Database Name: ${conn.connection.name}`);
+        console.log(`🔗 MongoDB URI Host: ${new URL(process.env.MONGO_URI).hostname}`);
 
         return conn;
 

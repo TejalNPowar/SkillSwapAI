@@ -56,7 +56,12 @@ export default function Dashboard() {
 
   const handleConfirmRequest = async () => {
     if (!requestTarget) return
-    await sendRequest({ fromUserId: user?.id, toUserId: requestTarget.id, skill: requestTarget.skillsOffered[0] })
+    await sendRequest({
+      receiverId: requestTarget._id,
+      offeredSkill: user?.skillsOffered?.[0] || "General",
+      requestedSkill: requestTarget.skillsOffered?.[0] || "General",
+      message: `${user?.name || "A student"} wants to swap skills with you.`,
+    })
     setRequestTarget(null)
   }
 
@@ -68,8 +73,9 @@ export default function Dashboard() {
     <div className="flex page-enter">
       <Sidebar />
       <div className="container-page flex-1 py-8">
-        <h1 className="font-display text-2xl font-bold text-slate-900">Welcome back, {user?.name?.split(' ')[0] || 'Student'} \uD83D\uDC4B</h1>
-        <p className="mt-1 text-sm text-slate-500">Here\u2019s what\u2019s happening with your skill swaps.</p>
+        <h1 className="font-display text-2xl font-bold text-slate-900">Welcome back, {user?.name?.split(' ')[0] || 'Student'} 
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">Here's what's happening with your skill swaps.</p>
 
         {/* Stats */}
         <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">

@@ -8,6 +8,8 @@ const swapRoutes = require("./routes/swapRoutes");
 const userRoutes = require("./routes/userRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const sessionRoutes = require("./routes/sessionRoutes");
+const googleAuthRoutes = require("./routes/googleAuthRoutes");
+const meetRoutes = require("./routes/meetRoutes");
 
 const app = express();
 
@@ -26,10 +28,15 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.get("/api/test-google", (req, res) => {
+    res.send("Google route system is working!");
+});
+app.use("/api/auth/google", googleAuthRoutes);
 app.use("/api/swaps", swapRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/meet", meetRoutes);
 
 // Default Route
 app.get("/", (req, res) => {

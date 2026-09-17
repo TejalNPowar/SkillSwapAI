@@ -5,9 +5,9 @@ import Sidebar from "../components/Sidebar";
 import SkillTag from "../components/SkillTag";
 import Modal from "../components/Modal";
 import { useAuth } from "../context/AuthContext";
-// import { getProfile, sendRequest } from "../services/api";
-import { getProfile, getUserById } from "../services/api";
+import { getProfile, getUserById, sendRequest } from "../services/api";
 import EditProfileModal from "../components/EditProfileModal.jsx";
+
 
 export default function Profile() {
   const { id } = useParams();
@@ -18,6 +18,7 @@ export default function Profile() {
   const [showRequest, setShowRequest] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [sent, setSent] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   
 
@@ -53,18 +54,62 @@ export default function Profile() {
 
 }, [id]);
 
+
+const connectGoogle = async () => {
+    try {
+        setGoogleLoading(true);
+
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+            "http://localhost:5000/api/auth/google",
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message || "Failed to connect Google.");
+        }
+
+        // Open Google OAuth
+        window.location.href = data.authUrl;
+
+    } catch (error) {
+
+        console.error("Google connection error:", error);
+
+        alert("Failed to connect Google account.");
+
+    } finally {
+
+        setGoogleLoading(false);
+
+    }
+};
+
+
+
+
   const handleSendRequest = async () => {
     try {
       await sendRequest({
-        fromUserId: authUser?._id,
-        toUserId: profileUser?._id,
-        skill: profileUser?.skillsOffered?.[0],
+        receiverId: profileUser?._id,
+        offeredSkill: authUser?.skillsOffered?.[0] || "General",
+        requestedSkill: profileUser?.skillsOffered?.[0] || "General",
+        message: `${authUser?.name || "A student"} wants to swap skills with you.`,
       });
 
       setSent(true);
       setShowRequest(false);
     } catch (err) {
       console.error(err);
+      alert(err.response?.data?.message || "Failed to send request.");
     }
   };
 
@@ -93,6 +138,8 @@ export default function Profile() {
   console.log("Auth User:", authUser);
   console.log("Profile User:", profileUser);
   console.log("Same user?", authUser?._id === profileUser?._id);
+
+
 
   return (
     <div className="flex page-enter">
@@ -218,6 +265,16 @@ export default function Profile() {
     >
       Edit Profile
     </button>
+
+
+    <button
+      onClick={connectGoogle}
+      disabled={googleLoading}
+      className="btn-primary"
+  >
+      {googleLoading ? "Connecting..." : "Connect Google"}
+  </button>
+
 
   </div>
 

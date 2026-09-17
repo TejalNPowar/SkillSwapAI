@@ -11,9 +11,11 @@ import ExploreSkills from './pages/ExploreSkills.jsx'
 import Profile from './pages/Profile.jsx'
 import MyRequests from './pages/MyRequests.jsx'
 import NotFound from './pages/NotFound.jsx'
+import MySessions from "./pages/MySessions";
+
 
 // Pages that use the dashboard Sidebar layout instead of the public Footer
-const APP_SHELL_ROUTES = ['/dashboard', '/explore', '/requests', '/profile']
+const APP_SHELL_ROUTES = ['/dashboard', '/explore', '/requests', '/profile','/sessions'];
 
 export default function App() {
   const location = useLocation()
@@ -71,6 +73,18 @@ export default function App() {
               </ProtectedRoute>
           }
       />
+
+
+    <Route
+            path="/sessions"
+            element={
+                <ProtectedRoute>
+                <MySessions />
+                </ProtectedRoute>
+            }
+        />
+
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
